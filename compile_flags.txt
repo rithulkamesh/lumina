@@ -1,0 +1,8 @@
+-lglfw3
+-Wall
+-Wextra
+-g
+-std=c++17
+-fpic
+-Iinclude
+-Ilumina
