@@ -6,3 +6,5 @@
 -fpic
 -Iinclude
 -Ilumina
+-I/opt/homebrew/include
+-I/usr/local/include

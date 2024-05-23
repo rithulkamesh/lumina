@@ -1,6 +1,6 @@
 # Compiler and compiler flags
 CXX = g++-13
-CXXFLAGS = -Wall -Wextra -g -std=c++17 -fpic -Iinclude -Ilumina
+CXXFLAGS = -Wall -Wextra -g -std=c++17 -fpic -Iinclude -Ilumina -I/opt/homebrew/include -I/usr/local/include
 
 # Determine the operating system
 UNAME_S := $(shell uname -s)
