@@ -81,6 +81,9 @@ void Lumina::create_vulkan_instance() {
   VkResult result = vkCreateInstance(&createInfo, nullptr, &vulkan_instance);
 
   if (result != VK_SUCCESS) {
+    std::stringstream ss;
+    ss << "failed to create instance. code: " << (int)result;
+    Logger::Log(LogLevel_Error, ss.str(), __FILE__, __LINE__);
     throw std::runtime_error("failed to create instance!");
   }
 
