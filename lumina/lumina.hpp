@@ -40,4 +40,5 @@ private:
   void Cleanup();
   void MainLoop();
   void create_vulkan_instance();
+  void get_supported_extensions();
 };

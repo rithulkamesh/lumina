@@ -87,3 +87,16 @@ void Lumina::create_vulkan_instance() {
   Logger::Log(LogLevel_Info, "vulkan intialized successfully.", __FILE__,
               __LINE__);
 }
+
+void Lumina::get_supported_extensions() {
+  uint32_t extensionCount = 0;
+  vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+  vector<VkExtensionProperties> extensions(extensionCount);
+  vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount,
+                                         extensions.data());
+  cout << "available extensions:\n";
+
+  for (const auto &extension : extensions) {
+    cout << '\t' << extension.extensionName << '\n';
+  }
+}
