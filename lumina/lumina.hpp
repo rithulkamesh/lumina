@@ -1,8 +1,8 @@
 #pragma once
 
-#include "GLFW/glfw3.h"
-#include "string"
-#include "vulkan/vulkan.h"
+#include <GLFW/glfw3.h>
+#include <string>
+#include <vulkan/vulkan.hpp>
 
 using namespace std;
 typedef struct {
@@ -39,4 +39,5 @@ private:
   void Init();
   void Cleanup();
   void MainLoop();
+  void create_vulkan_instance();
 };
