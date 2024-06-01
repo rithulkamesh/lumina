@@ -2,7 +2,11 @@
 
 #include <GLFW/glfw3.h>
 #include <string>
+#include <unordered_set>
 #include <vulkan/vulkan.hpp>
+
+const std::vector<const char *> validationLayers = {
+    "VK_LAYER_KHRONOS_validation"};
 
 using namespace std;
 typedef struct {
@@ -36,9 +40,13 @@ public:
 private:
   GLFWwindow *window;
   VkInstance vulkan_instance;
+
   void Init();
   void Cleanup();
   void MainLoop();
+
   void create_vulkan_instance();
   void get_supported_extensions();
+
+  bool checkValidationLayerSupport();
 };

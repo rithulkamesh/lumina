@@ -1,11 +1,40 @@
 #include "lumina.hpp"
 #include "util/log.hpp"
 
+#ifdef NDEBUG
+const bool enableValidationLayers = false;
+#else
+const bool enableValidationLayers = true;
+#endif
+
 void Lumina::create_vulkan_instance() {
+
+  if (enableValidationLayers && !checkValidationLayerSupport()) {
+    Logger::Log(LogLevel_Error,
+                "validation layers requested, but not available!", __FILE__,
+                __LINE__);
+
+    throw std::runtime_error("validation layers requested, but not available!");
+    return;
+  }
+
+  VkApplicationInfo appInfo{};
+  VkInstanceCreateInfo createInfo{};
+
+  if (enableValidationLayers) {
+    createInfo.enabledLayerCount =
+        static_cast<uint32_t>(validationLayers.size());
+    createInfo.ppEnabledLayerNames = validationLayers.data();
+
+    Logger::Log(LogLevel_Info, "validation layers initialized.", __FILE__,
+                __LINE__);
+  } else {
+    createInfo.enabledLayerCount = 0;
+  }
+
   auto version =
       VK_MAKE_VERSION(game_metadata.version[0], game_metadata.version[1],
                       game_metadata.version[2]);
-  VkApplicationInfo appInfo{};
   appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
   appInfo.pApplicationName = game_metadata.identifier.c_str();
   appInfo.applicationVersion = version;
@@ -13,7 +42,6 @@ void Lumina::create_vulkan_instance() {
   appInfo.engineVersion = version;
   appInfo.apiVersion = VK_API_VERSION_1_0;
 
-  VkInstanceCreateInfo createInfo{};
   createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
   createInfo.pApplicationInfo = &appInfo;
 
@@ -24,7 +52,6 @@ void Lumina::create_vulkan_instance() {
   glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
   createInfo.enabledExtensionCount = glfwExtensionCount;
   createInfo.ppEnabledExtensionNames = glfwExtensions;
-  createInfo.enabledLayerCount = 0;
 
   // MACOS VK_ERROR_INCOMPATIBLE_DRIVER Fixes
   std::vector<const char *> requiredExtensions;
