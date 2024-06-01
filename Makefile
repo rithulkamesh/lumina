@@ -17,8 +17,9 @@ SRCDIR = src
 SOURCES = $(wildcard $(SRCDIR)/*.cpp)
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp, build/%.o, $(SOURCES))
 
+
 ENGINE_SRCDIR = lumina
-ENGINE_SOURCES = $(wildcard $(ENGINE_SRCDIR)/*.cpp)
+ENGINE_SOURCES = $(wildcard $(ENGINE_SRCDIR)/*.cpp) $(wildcard $(ENGINE_SRCDIR)/util/*.cpp) $(wildcard $(ENGINE_SRCDIR)/engine/*.cpp)
 ENGINE_OBJECTS = $(patsubst $(ENGINE_SRCDIR)/%.cpp, build/%.o, $(ENGINE_SOURCES))
 
 TARGET = build/game
@@ -28,7 +29,6 @@ all: $(TARGET)
 
 run: $(TARGET)
 	@ ./build/game
-
 
 $(TARGET): $(OBJECTS) $(LIB_TARGET)
 	@$(CXX) $(OBJECTS) -o $@ $(LDFLAGS) -Lbuild -llumina
