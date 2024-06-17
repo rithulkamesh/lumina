@@ -1,12 +1,6 @@
 #include "lumina.hpp"
 #include "util/log.hpp"
 
-#ifdef NDEBUG
-const bool enableValidationLayers = false;
-#else
-const bool enableValidationLayers = true;
-#endif
-
 void Lumina::create_vulkan_instance() {
 
   if (enableValidationLayers && !checkValidationLayerSupport()) {
@@ -46,18 +40,15 @@ void Lumina::create_vulkan_instance() {
   createInfo.pApplicationInfo = &appInfo;
 
   // Vulkan requies extensions to interface with the window systems
-  uint32_t glfwExtensionCount = 0;
-  const char **glfwExtensions;
-
-  glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-  createInfo.enabledExtensionCount = glfwExtensionCount;
-  createInfo.ppEnabledExtensionNames = glfwExtensions;
+  auto extensions = getRequiredExtensions();
+  createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
+  createInfo.ppEnabledExtensionNames = extensions.data();
 
   // MACOS VK_ERROR_INCOMPATIBLE_DRIVER Fixes
   std::vector<const char *> requiredExtensions;
 
-  for (uint32_t i = 0; i < glfwExtensionCount; i++) {
-    requiredExtensions.emplace_back(glfwExtensions[i]);
+  for (uint32_t i = 0; i < extensions.size(); i++) {
+    requiredExtensions.emplace_back(extensions[i]);
   }
 
   requiredExtensions.emplace_back(
@@ -68,28 +59,29 @@ void Lumina::create_vulkan_instance() {
   createInfo.enabledExtensionCount = (uint32_t)requiredExtensions.size();
   createInfo.ppEnabledExtensionNames = requiredExtensions.data();
 
+  VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+  if (enableValidationLayers) {
+    createInfo.enabledLayerCount =
+        static_cast<uint32_t>(validationLayers.size());
+    createInfo.ppEnabledLayerNames = validationLayers.data();
+
+    populateDebugMessengerCreateInfo(debugCreateInfo);
+    createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
+  } else {
+    createInfo.enabledLayerCount = 0;
+
+    createInfo.pNext = nullptr;
+  }
+
   VkResult result = vkCreateInstance(&createInfo, nullptr, &vulkan_instance);
 
   if (result != VK_SUCCESS) {
     std::stringstream ss;
     ss << "failed to create instance. code: " << (int)result;
     Logger::Log(LogLevel_Error, ss.str(), __FILE__, __LINE__);
-    throw std::runtime_error("failed to create instance!");
+    exit(-1);
   }
 
   Logger::Log(LogLevel_Info, "vulkan intialized successfully.", __FILE__,
               __LINE__);
-}
-
-void Lumina::get_supported_extensions() {
-  uint32_t extensionCount = 0;
-  vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
-  vector<VkExtensionProperties> extensions(extensionCount);
-  vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount,
-                                         extensions.data());
-  cout << "available extensions:\n";
-
-  for (const auto &extension : extensions) {
-    cout << '\t' << extension.extensionName << '\n';
-  }
 }

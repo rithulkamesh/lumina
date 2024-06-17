@@ -11,7 +11,8 @@ enum LogLevel {
   LogLevel_Debug,
   LogLevel_Info,
   LogLevel_Warning,
-  LogLevel_Error
+  LogLevel_Error,
+  LogLevel_ValidationLayer
 };
 
 class Logger {

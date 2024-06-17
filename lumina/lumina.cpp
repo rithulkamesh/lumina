@@ -5,7 +5,6 @@
 int Lumina::Run() {
 
   Init();
-  create_vulkan_instance();
 
   while (!glfwWindowShouldClose(window)) {
     // glClear(GL_COLOR_BUFFER_BIT); // Deprecated in MacOS 10.14
@@ -33,10 +32,19 @@ void Lumina::Init() {
   }
 
   glfwMakeContextCurrent(window);
+
+  // Here starts Vulkan stuff
+  create_vulkan_instance();
+  setupDebugMessenger();
 }
 
 void Lumina::Cleanup() {
   Logger::Log(LogLevel_Info, "cleaning up.", __FILE__, __LINE__);
+
+  if (enableValidationLayers)
+
+    DestroyDebugUtilsMessengerEXT(vulkan_instance, debugMessenger, nullptr);
+
   vkDestroyInstance(vulkan_instance, nullptr);
   glfwDestroyWindow(window);
   glfwTerminate();

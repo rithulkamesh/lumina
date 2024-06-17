@@ -42,6 +42,8 @@ const char *Logger::GetLevelString(LogLevel level) {
     return "<warning>";
   case LogLevel_Error:
     return "<error>";
+  case LogLevel_ValidationLayer:
+    return "<validation_layer>";
   default:
     return "<unknown>";
   }
@@ -57,6 +59,8 @@ const char *Logger::GetColorTag(LogLevel level) {
     return "\033[33m";
   case LogLevel_Error:
     return "\033[31m";
+  case LogLevel_ValidationLayer:
+    return "\033[34m";
   default:
     return "\033[0m";
   }

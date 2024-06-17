@@ -1,12 +1,19 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
+#include <iostream>
 #include <string>
 #include <unordered_set>
 #include <vulkan/vulkan.hpp>
 
 const std::vector<const char *> validationLayers = {
     "VK_LAYER_KHRONOS_validation"};
+
+#ifdef NDEBUG
+const bool enableValidationLayers = false;
+#else
+const bool enableValidationLayers = true;
+#endif
 
 using namespace std;
 typedef struct {
@@ -43,10 +50,18 @@ private:
 
   void Init();
   void Cleanup();
-  void MainLoop();
 
   void create_vulkan_instance();
   void get_supported_extensions();
 
   bool checkValidationLayerSupport();
+  std::vector<const char *> getRequiredExtensions();
+
+  VkDebugUtilsMessengerEXT debugMessenger;
+  void setupDebugMessenger();
+  void DestroyDebugUtilsMessengerEXT(VkInstance instance,
+                                     VkDebugUtilsMessengerEXT debugMessenger,
+                                     const VkAllocationCallbacks *pAllocator);
+  void populateDebugMessengerCreateInfo(
+      VkDebugUtilsMessengerCreateInfoEXT &createInfo);
 };
