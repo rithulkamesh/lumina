@@ -1,5 +1,4 @@
 #include "lumina.hpp"
-#include "util/log.hpp"
 
 bool Lumina::checkValidationLayerSupport() {
   uint32_t layerCount;
@@ -50,6 +49,9 @@ debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
               VkDebugUtilsMessageTypeFlagsEXT messageType,
               const VkDebugUtilsMessengerCallbackDataEXT *pCallbackData,
               void *pUserData) {
+
+  (void)pUserData;
+  (void)messageType;
 
   if (messageSeverity >= VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT) {
     Logger::Log(LogLevel_ValidationLayer, pCallbackData->pMessage, __FILE__,

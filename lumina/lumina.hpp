@@ -1,7 +1,9 @@
 #pragma once
 
+#include "util/log.hpp"
 #include <GLFW/glfw3.h>
 #include <iostream>
+#include <optional>
 #include <string>
 #include <unordered_set>
 #include <vulkan/vulkan.hpp>
@@ -31,6 +33,12 @@ typedef struct {
   string identifier;
 } GameMeta;
 
+struct QueueFamilyIndices {
+  std::optional<uint32_t> graphicsFamily;
+
+  bool isComplete() { return graphicsFamily.has_value(); }
+};
+
 class Lumina {
 public:
   WindowOptions window_options;
@@ -57,6 +65,7 @@ private:
   bool checkValidationLayerSupport();
   std::vector<const char *> getRequiredExtensions();
 
+  // Fancy errors for the sake of it
   VkDebugUtilsMessengerEXT debugMessenger;
   void setupDebugMessenger();
   void DestroyDebugUtilsMessengerEXT(VkInstance instance,
@@ -64,4 +73,19 @@ private:
                                      const VkAllocationCallbacks *pAllocator);
   void populateDebugMessengerCreateInfo(
       VkDebugUtilsMessengerCreateInfoEXT &createInfo);
+
+  // Okay actual gpu stuff now
+
+  VkDevice device;
+  VkQueue graphicsQueue; // vkGetDeviceQueue(device,
+                         // indices.graphicsFamily.value(), 0, &graphicsQueue);
+                         // Use the above function to get the device queue
+  VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+  VkPhysicalDeviceProperties deviceProperties;
+  VkPhysicalDeviceFeatures deviceFeatures;
+
+  void pickPhysicalDevice();
+  void pickLogicalDevice();
+  bool isDeviceSupported(VkPhysicalDevice device);
+  QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
 };

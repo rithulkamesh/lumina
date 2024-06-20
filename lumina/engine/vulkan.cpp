@@ -1,5 +1,4 @@
 #include "lumina.hpp"
-#include "util/log.hpp"
 
 void Lumina::create_vulkan_instance() {
 
@@ -8,8 +7,7 @@ void Lumina::create_vulkan_instance() {
                 "validation layers requested, but not available!", __FILE__,
                 __LINE__);
 
-    throw std::runtime_error("validation layers requested, but not available!");
-    return;
+    exit(-1);
   }
 
   VkApplicationInfo appInfo{};
@@ -84,4 +82,8 @@ void Lumina::create_vulkan_instance() {
 
   Logger::Log(LogLevel_Info, "vulkan intialized successfully.", __FILE__,
               __LINE__);
+
+  setupDebugMessenger();
+  pickPhysicalDevice();
+  pickLogicalDevice();
 }

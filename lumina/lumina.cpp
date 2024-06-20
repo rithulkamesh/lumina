@@ -1,5 +1,6 @@
 #include "lumina.hpp"
 #include "util/log.hpp"
+#include "vulkan/vulkan_core.h"
 #include <iostream>
 
 int Lumina::Run() {
@@ -33,18 +34,16 @@ void Lumina::Init() {
 
   glfwMakeContextCurrent(window);
 
-  // Here starts Vulkan stuff
   create_vulkan_instance();
-  setupDebugMessenger();
 }
 
 void Lumina::Cleanup() {
   Logger::Log(LogLevel_Info, "cleaning up.", __FILE__, __LINE__);
 
   if (enableValidationLayers)
-
     DestroyDebugUtilsMessengerEXT(vulkan_instance, debugMessenger, nullptr);
 
+  vkDestroyDevice(device, nullptr);
   vkDestroyInstance(vulkan_instance, nullptr);
   glfwDestroyWindow(window);
   glfwTerminate();
