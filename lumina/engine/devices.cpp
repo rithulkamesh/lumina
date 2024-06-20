@@ -62,6 +62,14 @@ QueueFamilyIndices Lumina::findQueueFamilies(VkPhysicalDevice device) {
       indices.graphicsFamily = i;
     }
 
+    VkBool32 presentSupport = false;
+    vkGetPhysicalDeviceSurfaceSupportKHR(device, i, window_surface,
+                                         &presentSupport);
+
+    if (presentSupport) {
+      indices.presentFamily = i;
+    }
+
     if (indices.isComplete())
       break;
 
@@ -74,23 +82,29 @@ QueueFamilyIndices Lumina::findQueueFamilies(VkPhysicalDevice device) {
 void Lumina::pickLogicalDevice() {
   QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
   VkPhysicalDeviceFeatures deviceFeatures{};
-  VkDeviceQueueCreateInfo queueCreateInfo{};
   VkDeviceCreateInfo createInfo{};
+  std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+  std::set<uint32_t> uniqueQueueFamilies = {indices.graphicsFamily.value(),
+                                            indices.presentFamily.value()};
+
   float queuePriority = 1.0f;
 
-  queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-  queueCreateInfo.queueFamilyIndex = indices.graphicsFamily.value();
-  queueCreateInfo.queueCount = 1;
-
-  queueCreateInfo.pQueuePriorities = &queuePriority;
-
-  createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-  createInfo.pQueueCreateInfos = &queueCreateInfo;
-  createInfo.queueCreateInfoCount = 1;
+  for (uint32_t queueFamily : uniqueQueueFamilies) {
+    VkDeviceQueueCreateInfo queueCreateInfo{};
+    queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queueCreateInfo.queueFamilyIndex = queueFamily;
+    queueCreateInfo.queueCount = 1;
+    queueCreateInfo.pQueuePriorities = &queuePriority;
+    queueCreateInfos.push_back(queueCreateInfo);
+  }
 
   createInfo.pEnabledFeatures = &deviceFeatures;
 
   createInfo.enabledExtensionCount = 0;
+  createInfo.queueCreateInfoCount =
+      static_cast<uint32_t>(queueCreateInfos.size());
+  createInfo.pQueueCreateInfos = queueCreateInfos.data();
+  createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
 
   if (enableValidationLayers) {
     createInfo.enabledLayerCount =
@@ -107,4 +121,6 @@ void Lumina::pickLogicalDevice() {
                 __LINE__);
     exit(-1);
   }
+
+  vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 }

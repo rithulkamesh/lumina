@@ -84,6 +84,7 @@ void Lumina::create_vulkan_instance() {
               __LINE__);
 
   setupDebugMessenger();
+  createSurface();
   pickPhysicalDevice();
   pickLogicalDevice();
 }

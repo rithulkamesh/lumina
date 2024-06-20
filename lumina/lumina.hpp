@@ -1,6 +1,7 @@
 #pragma once
 
 #include "util/log.hpp"
+#define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <optional>
@@ -35,8 +36,11 @@ typedef struct {
 
 struct QueueFamilyIndices {
   std::optional<uint32_t> graphicsFamily;
+  std::optional<uint32_t> presentFamily;
 
-  bool isComplete() { return graphicsFamily.has_value(); }
+  bool isComplete() {
+    return graphicsFamily.has_value() && presentFamily.has_value();
+  }
 };
 
 class Lumina {
@@ -88,4 +92,10 @@ private:
   void pickLogicalDevice();
   bool isDeviceSupported(VkPhysicalDevice device);
   QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+
+  // Window Surface because platform agnosticity
+  VkSurfaceKHR window_surface;
+  VkQueue presentQueue;
+
+  void createSurface();
 };

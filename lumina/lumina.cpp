@@ -25,6 +25,9 @@ void Lumina::Init() {
   Logger::Log(LogLevel_Info, "glfw initalized successfully.", __FILE__,
               __LINE__);
 
+  glfwWindowHint(GLFW_CLIENT_API,
+                 GLFW_NO_API); // Stop creating OpenGL windows since we're doing
+                               // it through vulkan refer `engine/window.cpp`
   window = glfwCreateWindow(window_options.size.x, window_options.size.y,
                             window_options.title.c_str(), NULL, NULL);
   if (!window) {
@@ -44,6 +47,7 @@ void Lumina::Cleanup() {
     DestroyDebugUtilsMessengerEXT(vulkan_instance, debugMessenger, nullptr);
 
   vkDestroyDevice(device, nullptr);
+  vkDestroySurfaceKHR(vulkan_instance, window_surface, nullptr);
   vkDestroyInstance(vulkan_instance, nullptr);
   glfwDestroyWindow(window);
   glfwTerminate();
