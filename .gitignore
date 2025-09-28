@@ -2,3 +2,4 @@ include/
 build/
 log/
 .DS_store
+.direnv/

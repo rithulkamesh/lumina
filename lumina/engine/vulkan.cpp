@@ -1,8 +1,10 @@
 #include "lumina.hpp"
 
-void Lumina::create_vulkan_instance() {
+void Lumina::create_vulkan_instance()
+{
 
-  if (enableValidationLayers && !checkValidationLayerSupport()) {
+  if (enableValidationLayers && !checkValidationLayerSupport())
+  {
     Logger::Log(LogLevel_Error,
                 "validation layers requested, but not available!", __FILE__,
                 __LINE__);
@@ -13,14 +15,17 @@ void Lumina::create_vulkan_instance() {
   VkApplicationInfo appInfo{};
   VkInstanceCreateInfo createInfo{};
 
-  if (enableValidationLayers) {
+  if (enableValidationLayers)
+  {
     createInfo.enabledLayerCount =
         static_cast<uint32_t>(validationLayers.size());
     createInfo.ppEnabledLayerNames = validationLayers.data();
 
     Logger::Log(LogLevel_Info, "validation layers initialized.", __FILE__,
                 __LINE__);
-  } else {
+  }
+  else
+  {
     createInfo.enabledLayerCount = 0;
   }
 
@@ -45,7 +50,8 @@ void Lumina::create_vulkan_instance() {
   // MACOS VK_ERROR_INCOMPATIBLE_DRIVER Fixes
   std::vector<const char *> requiredExtensions;
 
-  for (uint32_t i = 0; i < extensions.size(); i++) {
+  for (uint32_t i = 0; i < extensions.size(); i++)
+  {
     requiredExtensions.emplace_back(extensions[i]);
   }
 
@@ -58,14 +64,17 @@ void Lumina::create_vulkan_instance() {
   createInfo.ppEnabledExtensionNames = requiredExtensions.data();
 
   VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-  if (enableValidationLayers) {
+  if (enableValidationLayers)
+  {
     createInfo.enabledLayerCount =
         static_cast<uint32_t>(validationLayers.size());
     createInfo.ppEnabledLayerNames = validationLayers.data();
 
     populateDebugMessengerCreateInfo(debugCreateInfo);
     createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT *)&debugCreateInfo;
-  } else {
+  }
+  else
+  {
     createInfo.enabledLayerCount = 0;
 
     createInfo.pNext = nullptr;
@@ -73,7 +82,8 @@ void Lumina::create_vulkan_instance() {
 
   VkResult result = vkCreateInstance(&createInfo, nullptr, &vulkan_instance);
 
-  if (result != VK_SUCCESS) {
+  if (result != VK_SUCCESS)
+  {
     std::stringstream ss;
     ss << "failed to create instance. code: " << (int)result;
     Logger::Log(LogLevel_Error, ss.str(), __FILE__, __LINE__);
@@ -86,5 +96,7 @@ void Lumina::create_vulkan_instance() {
   setupDebugMessenger();
   createSurface();
   pickPhysicalDevice();
+  Logger::Log(LogLevel_Info, "physical device picked successfully", __FILE__, __LINE__);
   pickLogicalDevice();
+  Logger::Log(LogLevel_Info, "logical device created successfully", __FILE__, __LINE__);
 }
